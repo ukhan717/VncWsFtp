@@ -10,9 +10,9 @@
 **********************************************************************
 -------------------------- END-OF-HEADER -----------------------------
 
-File    : IP_WEBSOCKET_//printf_Server.c
+File    : IP_WEBSOCKET_printf_Server.c
 Purpose : Simple WebSocket terminal that can receive text messages
-          to //printf them to the standard output.
+          to printf them to the standard output.
           The WebSocket protocol returned in the response is "debug".
           The protocols suggested by the client are not parsed by this
           sample for simplicity but the protocol returned can be
@@ -200,7 +200,7 @@ static int _cbWebSocket_Recv(IP_WEBSOCKET_CONTEXT* pContext, IP_WEBSOCKET_CONNEC
 *    returned with SOCKET_ERROR (-1).
 */
 static void _Panic(void) {
-  //printf("Error, program halted!\n");
+  printf("Error, program halted!\n");
   for (;;);
 }
 
@@ -249,7 +249,7 @@ static void _WebSocketTask(void) {
     //
     r = recv(hSock, _acBuffer, sizeof(_acBuffer), 0);
     if (r == sizeof(_acBuffer)) {
-      //printf("_acBuffer is too small to read the complete HTTP header.\n");
+      printf("_acBuffer is too small to read the complete HTTP header.\n");
       goto OnError;  // Error.
     }
     if (r <= 0) {
@@ -261,13 +261,13 @@ static void _WebSocketTask(void) {
     //
     sKey = strstr(&_acBuffer[0], "Sec-WebSocket-Key: ");
     if (sKey == NULL) {
-      //printf("Sec-WebSocket-Key field not found.\n");
+      printf("Sec-WebSocket-Key field not found.\n");
       goto OnError;  // Error.
     }
     sKey += sizeof("Sec-WebSocket-Key: ") - 1;
     s = strstr(sKey, "\r\n");
     if (s == NULL) {
-      //printf("End of Sec-WebSocket-Key field not found.\n");
+      printf("End of Sec-WebSocket-Key field not found.\n");
       goto OnError;  // Error.
     }
     //
@@ -275,7 +275,7 @@ static void _WebSocketTask(void) {
     //
     r = IP_WEBSOCKET_GenerateAcceptKey(sKey, (unsigned)(s - sKey), &ac[0], sizeof(ac) - 1);
     if (r == 0) {
-      //printf("Buffer for accept key is not big enough.\n");
+      printf("Buffer for accept key is not big enough.\n");
       goto OnError;  // Error.
     }
     ac[r] = '\0';
@@ -284,11 +284,11 @@ static void _WebSocketTask(void) {
     //
     r = SEGGER_snprintf(_acBuffer, sizeof(_acBuffer), OPEN_RESPONSE, WEBSOCKET_PROTO, ac);
     if (r == sizeof(_acBuffer)) {
-      //printf("_acBuffer is too small for the response.\n");
+      printf("_acBuffer is too small for the response.\n");
       goto OnError;  // Error.
     }
     send(hSock, (const char*)_acBuffer, strlen(_acBuffer), 0);
-    //printf("WebSocket client connected.\n");
+    printf("WebSocket client connected.\n");
     //
     // Initialize the WebSocket context for the server.
     //
@@ -318,7 +318,7 @@ static void _WebSocketTask(void) {
         //
         r = SEGGER_snprintf(ac, sizeof(ac), "Bye, bye");
         if (r == sizeof(ac)) {
-          //printf("ac buffer is too small for close payload.\n");
+          printf("ac buffer is too small for close payload.\n");
           goto OnError;  // Error.
         }
         do {
@@ -347,7 +347,7 @@ static void _WebSocketTask(void) {
               NumBytesRead += r;
             } else if (r == IP_WEBSOCKET_ERR_ALL_DATA_READ) {
               *s = '\0';
-              //printf("Client: %s\n", ac);
+              printf("Client: %s\n", ac);
               break;
             } else if (r == 0) {
               goto OnDisconnect;
@@ -374,8 +374,7 @@ static void _WebSocketTask(void) {
       }
     }
 OnDisconnect:
-    while(1);
-    //printf("WebSocket client disconnected.\n");
+    printf("WebSocket client disconnected.\n");
 OnError:
     closesocket(hSock);
   }  while(1);
