@@ -1,0 +1,32 @@
+#
+# This file is going to be stored at /etc/udev/rules.d.
+# It makes sure that non-superuser have access to the connected USB devices
+#
+#
+# Give all users read and write access.
+#
+
+# All CDC-ACM devices
+SUBSYSTEM=="tty", MODE="0666"
+
+# Secific CDC-ACM device
+# SUBSYSTEM=="tty", ATTR{idProduct}=="1111", ATTR{idVendor}=="8765", MODE="0666"
+
+# All HID devices
+# SUBSYSTEM=="hidraw", MODE="0666"
+
+# Secific HID device
+SUBSYSTEM=="hidraw", ATTRS{idProduct}=="1114", ATTRS{idVendor}=="8765", MODE="0666"
+
+# Secific BULK device
+SUBSYSTEM=="usb", ATTR{idProduct}=="1234", ATTR{idVendor}=="8765", MODE="666"
+SUBSYSTEM=="usb", ATTR{idProduct}=="1240", ATTR{idVendor}=="8765", MODE="666"
+SUBSYSTEM=="usb", ATTR{idProduct}=="1241", ATTR{idVendor}=="8765", MODE="666"
+
+# Specific ISO device
+SUBSYSTEM=="usb", ATTRS{idProduct}=="1089", ATTRS{idVendor}=="8765", MODE="666"
+
+# Stop the modemmanager from accessing the device
+# It should be ignored by the modemmanager, otherwise any AT commands are sent to the device
+# which should not happen normally.
+ACTION=="add|change|move", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="8765", ATTRS{idProduct}=="1111", ENV{ID_MM_DEVICE_IGNORE}="1"
